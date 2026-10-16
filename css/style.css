@@ -1,0 +1,80 @@
+html, body { margin: 0; padding: 0; }
+#floraBridge { padding: 12px; color: #172b4d; }
+#floraBridge h2 { margin: 0 0 8px; font-size: 18px; }
+#floraBridge h3 { margin: 14px 0 7px; font-size: 13px; }
+#floraBridge .intro, #floraBridge p { margin: 0 0 8px; line-height: 1.45; }
+
+.auth-panel {
+  margin-top: 12px;
+  padding: 11px;
+  border-radius: 7px;
+  background: #f4f5f7;
+}
+
+.auth-state {
+  margin-bottom: 9px;
+  padding: 8px 9px;
+  border-radius: 5px;
+  background: #dfe1e6;
+  font-size: 12px;
+}
+.auth-state.success { background: #e3fcef; color: #006644; }
+.auth-state.warning { background: #fffae6; color: #7a5d00; }
+
+.primary-auth, .secondary-auth, #copyToken {
+  width: 100%;
+  margin: 4px 0 7px;
+  min-height: 34px;
+  font-weight: 600;
+}
+
+.primary-auth {
+  background: #0c66e4;
+  color: white;
+  border: 0;
+}
+
+.secondary-auth {
+  background: #dfe1e6;
+  color: #172b4d;
+  border: 0;
+}
+
+.token-row { margin-top: 8px; }
+.token-row label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.token-row input {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 5px;
+}
+.token-note, .admin-help {
+  font-size: 11px;
+  color: #44546f;
+}
+
+.media {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 9px;
+  margin-bottom: 6px;
+  border-radius: 5px;
+  background: #f4f5f7;
+}
+.media strong { min-width: 62px; }
+.media.unity { border-left: 4px solid #3c87ea; }
+.media.max { border-left: 4px solid #2ea19f; }
+
+.status {
+  margin-top: 14px;
+  padding: 8px 10px;
+  border-radius: 5px;
+  background: #006767;
+  color: white;
+  font-weight: 600;
+}

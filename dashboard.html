@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://p.trellocdn.com/power-up.min.css">
+  <link rel="stylesheet" href="./css/style.css">
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+  <script src="./js/config.js"></script>
+  <title>Flora Tools Trello Bridge</title>
+</head>
+<body>
+  <main id="floraBridge">
+    <h2>Flora Tools Trello Bridge</h2>
+    <p class="intro">Authorize your own Trello account, then use your personal token in Flora Tools.</p>
+
+    <section class="auth-panel">
+      <h3>Trello Account</h3>
+      <div id="authState" class="auth-state">Checking authorization…</div>
+
+      <button id="authorizeFlora" class="primary-auth" type="button">
+        Authorize Flora Tools
+      </button>
+
+      <button id="reauthorizeFlora" class="secondary-auth" type="button" hidden>
+        Re-authorize Account
+      </button>
+
+      <button id="generateToken" class="secondary-auth" type="button">
+        Generate / Show Token
+      </button>
+
+      <div id="tokenRow" class="token-row" hidden>
+        <label for="trelloToken">Your personal Trello Token</label>
+        <input id="trelloToken" type="password" readonly autocomplete="off">
+        <button id="copyToken" type="button" hidden>Copy Token</button>
+        <p class="token-note">Paste this token into Trello Credentials in Unity, 3ds Max or Blender. Keep it private.</p>
+      </div>
+
+      <p id="authHelp" class="admin-help" hidden>
+        The Power-Up owner must place the public API Key in <strong>js/config.js</strong>. Never place a user Token or API Secret there.
+      </p>
+    </section>
+
+    <section>
+      <h3>Expected attachments</h3>
+      <div class="media unity"><strong>Unity</strong><span>challenge_gamepreview.jpg</span></div>
+      <div class="media max"><strong>3ds Max</strong><span>challenge_background.jpg</span></div>
+      <div class="media max"><strong>3ds Max</strong><span>challenge_spwnners.jpg / challenge_spawners.jpg</span></div>
+    </section>
+
+    <section>
+      <h3>Workflow</h3>
+      <p>Each artist authorizes with their own Trello account. The API Key is shared by the Flora Tools app, but each artist receives a different private Token.</p>
+    </section>
+
+    <div class="status">Flora Bridge R04</div>
+  </main>
+  <script src="./js/dashboard.js"></script>
+</body>
+</html>

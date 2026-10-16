@@ -8,7 +8,7 @@
  * - NEVER put a Trello user Token or API Secret in this file.
  */
 window.FLORA_TRELLO_CONFIG = {
-  appKey: 'PASTE_TRELLO_API_KEY_HERE',
+  appKey: '54cef2b3a66d2969e037652cdcbdf0cd',
   appName: 'Flora Tools Trello Bridge',
   appAuthor: 'Flora Tools'
 };

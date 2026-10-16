@@ -1,4 +1,4 @@
-/* Flora Tools Trello Bridge R03 - public configuration
+/* Flora Tools Trello Bridge R05 - public configuration
  *
  * Paste the API Key from:
  * Trello Apps Admin -> Flora Tools Trello Bridge -> Trello Auth
@@ -8,7 +8,7 @@
  * - NEVER put a Trello user Token or API Secret in this file.
  */
 window.FLORA_TRELLO_CONFIG = {
-  appKey: 'feedcaf8603539a4965be5ee46ffe4cd',
+  appKey: 'PASTE_TRELLO_API_KEY_HERE',
   appName: 'Flora Tools Trello Bridge',
   appAuthor: 'Flora Tools'
 };

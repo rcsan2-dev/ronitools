@@ -1,4 +1,4 @@
-/* Flora Tools Trello Bridge R04 */
+/* Flora Tools Trello Bridge R06 - Settings Only + REST API Promise Fix */
 
 (function () {
   'use strict';
@@ -61,15 +61,8 @@
   }
 
   var capabilities = {
-    'board-buttons': function (t) {
-      return [{
-        icon: { dark: ICON_DARK, light: ICON_LIGHT },
-        text: 'Flora Tools',
-        condition: 'edit',
-        callback: function () {
-          return openDashboard(t);
-        }
-      }];
+    'show-settings': function (t) {
+      return openDashboard(t, 'Flora Tools Settings');
     },
 
     'card-badges': function (t, opts) {
@@ -108,7 +101,9 @@
       }
 
       return t.getRestApi()
-        .isAuthorized()
+        .then(function (client) {
+          return client.isAuthorized();
+        })
         .then(function (authorized) {
           return { authorized: !!authorized };
         })
@@ -119,10 +114,6 @@
 
     'show-authorization': function (t) {
       return openDashboard(t, 'Authorize Flora Tools');
-    },
-
-    'on-enable': function (t) {
-      return openDashboard(t);
     }
   };
 

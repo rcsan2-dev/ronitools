@@ -1,4 +1,7 @@
-/* Flora Tools Trello Bridge R04 - dashboard + authorization + token generation */
+/* Flora Tools Trello Bridge R06
+ * Fix: Trello t.getRestApi() returns a Promise in the current client.
+ * Adds Show / Hide Token.
+ */
 
 (function () {
   'use strict';
@@ -14,6 +17,7 @@
   var copyButton;
   var reauthorizeButton;
   var generateTokenButton;
+  var toggleTokenButton;
   var tokenRow;
   var tokenField;
   var authState;
@@ -30,10 +34,16 @@
     return t.sizeTo('#floraBridge');
   }
 
+  function getClient() {
+    return t.getRestApi();
+  }
+
   function hideToken() {
     tokenRow.hidden = true;
     copyButton.hidden = true;
     tokenField.value = '';
+    tokenField.type = 'password';
+    toggleTokenButton.textContent = 'Show';
   }
 
   function showToken(token) {
@@ -43,8 +53,24 @@
     }
 
     tokenField.value = token;
+    tokenField.type = 'password';
+    toggleTokenButton.textContent = 'Show';
     tokenRow.hidden = false;
     copyButton.hidden = false;
+  }
+
+  function toggleTokenVisibility() {
+    if (!tokenField.value) return;
+
+    if (tokenField.type === 'password') {
+      tokenField.type = 'text';
+      toggleTokenButton.textContent = 'Hide';
+    } else {
+      tokenField.type = 'password';
+      toggleTokenButton.textContent = 'Show';
+    }
+
+    return t.sizeTo('#floraBridge');
   }
 
   function fallbackCopy(text) {
@@ -74,24 +100,19 @@
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(token)
         .then(function () {
-          setState('Token copied. Paste it into Trello Credentials in Flora Tools.', 'success');
+          return setState('Token copied. Paste it into Trello Credentials in Flora Tools.', 'success');
         })
         .catch(function () {
           if (fallbackCopy(token)) {
-            setState('Token copied. Paste it into Trello Credentials in Flora Tools.', 'success');
-          } else {
-            setState('Could not copy automatically. Select the token and copy it manually.', 'warning');
+            return setState('Token copied. Paste it into Trello Credentials in Flora Tools.', 'success');
           }
+          return setState('Could not copy automatically. Use Show and copy it manually.', 'warning');
         });
     } else if (fallbackCopy(token)) {
       setState('Token copied. Paste it into Trello Credentials in Flora Tools.', 'success');
     } else {
-      setState('Could not copy automatically. Select the token and copy it manually.', 'warning');
+      setState('Could not copy automatically. Use Show and copy it manually.', 'warning');
     }
-  }
-
-  function getClient() {
-    return t.getRestApi();
   }
 
   function refreshAuthorization() {
@@ -99,40 +120,47 @@
 
     if (!configured()) {
       authorizeButton.disabled = true;
+      generateTokenButton.disabled = true;
       reauthorizeButton.hidden = true;
       authHelp.hidden = false;
-      setState('Admin setup required: add the Power-Up API Key to js/config.js.', 'warning');
+      setState('API Key is not configured in js/config.js.', 'warning');
       return Promise.resolve();
     }
 
     authorizeButton.disabled = false;
+    generateTokenButton.disabled = false;
     authHelp.hidden = true;
 
     return getClient()
-      .isAuthorized()
-      .then(function (authorized) {
-        if (!authorized) {
-          authorizeButton.hidden = false;
-          reauthorizeButton.hidden = true;
-          setState('This Trello account has not authorized Flora Tools yet.', '');
-          return null;
-        }
+      .then(function (client) {
+        return client.isAuthorized()
+          .then(function (authorized) {
+            if (!authorized) {
+              authorizeButton.hidden = false;
+              reauthorizeButton.hidden = true;
+              setState('This Trello account has not authorized Flora Tools yet.', '');
+              return null;
+            }
 
-        authorizeButton.hidden = true;
-        reauthorizeButton.hidden = false;
+            authorizeButton.hidden = true;
+            reauthorizeButton.hidden = false;
 
-        return getClient()
-          .getToken()
-          .then(function (token) {
-            showToken(token);
-            setState('Authorized. Copy your personal token into Unity, 3ds Max or Blender.', 'success');
-            return token;
+            return client.getToken()
+              .then(function (token) {
+                if (token) {
+                  showToken(token);
+                  setState('Authorized. Your personal Trello token is ready.', 'success');
+                } else {
+                  setState('Authorized, but no token was returned. Click Generate / Show Token.', 'warning');
+                }
+                return token;
+              });
           });
       })
       .catch(function () {
         authorizeButton.hidden = false;
         reauthorizeButton.hidden = true;
-        setState('Could not read authorization status. Try Authorize Flora Tools.', 'warning');
+        return setState('Could not read Trello authorization status. Click Authorize Flora Tools.', 'warning');
       });
   }
 
@@ -143,29 +171,29 @@
     }
 
     authorizeButton.disabled = true;
-    reauthorizeButton.disabled = true;
+    generateTokenButton.disabled = true;
     setState('Opening Trello authorization…', '');
 
     getClient()
-      .authorize({
-        scope: 'read,write',
-        expiration: 'never'
-      })
-      .then(function () {
-        return getClient().getToken();
+      .then(function (client) {
+        return client.authorize({
+          scope: 'read,write',
+          expiration: 'never'
+        });
       })
       .then(function (token) {
+        if (!token) throw new Error('No token returned');
         showToken(token);
         authorizeButton.hidden = true;
         reauthorizeButton.hidden = false;
-        setState('Authorization complete. Copy your token below.', 'success');
+        return setState('Authorization complete. Your token is ready.', 'success');
       })
       .catch(function () {
-        setState('Authorization was cancelled or could not be completed.', 'warning');
+        return setState('Authorization was cancelled or could not be completed.', 'warning');
       })
       .then(function () {
         authorizeButton.disabled = false;
-        reauthorizeButton.disabled = false;
+        generateTokenButton.disabled = false;
         return t.sizeTo('#floraBridge');
       });
   }
@@ -177,39 +205,28 @@
     }
 
     generateTokenButton.disabled = true;
-    setState('Generating your Trello token…', '');
+    setState('Getting your Trello token…', '');
 
     getClient()
-      .isAuthorized()
-      .then(function (authorized) {
-        if (authorized) {
-          return getClient().getToken();
-        }
-
-        // If this account has not authorized the app yet,
-        // authorize first; Trello issues the personal token
-        // as part of this flow.
-        return getClient()
-          .authorize({
-            scope: 'read,write',
-            expiration: 'never'
-          })
-          .then(function () {
-            return getClient().getToken();
+      .then(function (client) {
+        return client.isAuthorized()
+          .then(function (authorized) {
+            if (authorized) return client.getToken();
+            return client.authorize({
+              scope: 'read,write',
+              expiration: 'never'
+            });
           });
       })
       .then(function (token) {
-        if (!token) {
-          throw new Error('No token returned');
-        }
-
+        if (!token) throw new Error('No token returned');
         showToken(token);
         authorizeButton.hidden = true;
         reauthorizeButton.hidden = false;
-        setState('Token ready. Click Copy Token and paste it into Flora Tools.', 'success');
+        return setState('Token ready. Use Show / Hide or Copy Token.', 'success');
       })
       .catch(function () {
-        setState('Could not generate the token. Try authorizing the account again.', 'warning');
+        return setState('Could not get the token. Try Authorize Flora Tools first.', 'warning');
       })
       .then(function () {
         generateTokenButton.disabled = false;
@@ -220,17 +237,32 @@
   function reauthorize() {
     hideToken();
     reauthorizeButton.disabled = true;
+    setState('Resetting Trello authorization…', '');
 
     getClient()
-      .clearToken()
+      .then(function (client) {
+        return client.clearToken()
+          .catch(function () { return null; })
+          .then(function () {
+            return client.authorize({
+              scope: 'read,write',
+              expiration: 'never'
+            });
+          });
+      })
+      .then(function (token) {
+        if (!token) throw new Error('No token returned');
+        showToken(token);
+        authorizeButton.hidden = true;
+        reauthorizeButton.hidden = false;
+        return setState('Account re-authorized. Your token is ready.', 'success');
+      })
       .catch(function () {
-        return null;
+        return setState('Could not re-authorize the account.', 'warning');
       })
       .then(function () {
         reauthorizeButton.disabled = false;
-        authorizeButton.hidden = false;
-        reauthorizeButton.hidden = true;
-        return authorize();
+        return t.sizeTo('#floraBridge');
       });
   }
 
@@ -239,6 +271,7 @@
     copyButton = document.getElementById('copyToken');
     reauthorizeButton = document.getElementById('reauthorizeFlora');
     generateTokenButton = document.getElementById('generateToken');
+    toggleTokenButton = document.getElementById('toggleToken');
     tokenRow = document.getElementById('tokenRow');
     tokenField = document.getElementById('trelloToken');
     authState = document.getElementById('authState');
@@ -248,6 +281,7 @@
     copyButton.addEventListener('click', copyToken);
     reauthorizeButton.addEventListener('click', reauthorize);
     generateTokenButton.addEventListener('click', generateToken);
+    toggleTokenButton.addEventListener('click', toggleTokenVisibility);
 
     return refreshAuthorization()
       .then(function () {

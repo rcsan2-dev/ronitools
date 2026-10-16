@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="./css/style.css">
   <script src="https://p.trellocdn.com/power-up.min.js"></script>
   <script src="./js/config.js"></script>
-  <title>Flora Tools Trello Bridge</title>
+  <title>Flora Tools Settings</title>
 </head>
 <body>
   <main id="floraBridge">
@@ -32,7 +32,10 @@
 
       <div id="tokenRow" class="token-row" hidden>
         <label for="trelloToken">Your personal Trello Token</label>
-        <input id="trelloToken" type="password" readonly autocomplete="off">
+        <div class="token-controls">
+          <input id="trelloToken" type="password" readonly autocomplete="off" spellcheck="false">
+          <button id="toggleToken" type="button">Show</button>
+        </div>
         <button id="copyToken" type="button" hidden>Copy Token</button>
         <p class="token-note">Paste this token into Trello Credentials in Unity, 3ds Max or Blender. Keep it private.</p>
       </div>
@@ -54,7 +57,7 @@
       <p>Each artist authorizes with their own Trello account. The API Key is shared by the Flora Tools app, but each artist receives a different private Token.</p>
     </section>
 
-    <div class="status">Flora Bridge R05</div>
+    <div class="status">Flora Bridge R06</div>
   </main>
   <script src="./js/dashboard.js"></script>
 </body>

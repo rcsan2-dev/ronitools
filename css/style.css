@@ -78,3 +78,20 @@ html, body { margin: 0; padding: 0; }
   color: white;
   font-weight: 600;
 }
+
+
+.token-controls {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+  margin-bottom: 6px;
+}
+.token-controls input {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0 !important;
+}
+.token-controls button {
+  width: 72px;
+  margin: 0;
+}

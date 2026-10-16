@@ -1,9 +1,11 @@
-FLORA TOOLS TRELLO BRIDGE R04
+FLORA TOOLS TRELLO BRIDGE R05
 ==============================
 
-NEW IN R04
+NEW IN R05
 ----------
-- Adds separate "Authorize Flora Tools" and "Generate / Show Token" buttons inside the Trello Power-Up.
+- Removes the Flora Tools board button. All user actions now live under Power-Ups -> Flora Tools Trello Bridge -> Settings -> Edit Power-Up Settings.
+- Adds the Trello "show-settings" capability to open the Flora Tools authorization/token panel.
+- Keeps Authorize, Generate / Show Token, Copy Token and Re-authorize inside Settings.
 - Each artist authorizes with their own Trello account.
 - After authorization, the Power-Up can show that user's personal Token and provides a Copy Token button.
 - The artist pastes that Token into Trello Credentials in Unity, 3ds Max or Blender.
@@ -62,4 +64,33 @@ Unity:
 
 VERSION
 -------
-Flora Tools Trello Bridge R04
+Flora Tools Trello Bridge R05
+
+
+TRELLO APPS ADMIN - REQUIRED FOR R05
+------------------------------------
+In Trello Apps Admin -> Flora Tools Trello Bridge -> Capabilities:
+- ENABLE: show-settings
+- ENABLE: authorization-status
+- ENABLE: show-authorization
+- KEEP ENABLED if desired: card-badges
+- DISABLE: board-buttons
+- DISABLE: on-enable (not needed for R05)
+
+After publishing the GitHub Pages update:
+1. Reload Trello with Ctrl+F5.
+2. Open the board.
+3. Open Power-Ups.
+4. Find Flora Tools Trello Bridge.
+5. Click Settings.
+6. Trello should now show "Edit Power-Up Settings".
+7. Click it to open:
+   - Authorize Flora Tools
+   - Generate / Show Token
+   - Copy Token
+   - Re-authorize Account
+
+IMPORTANT:
+The full R05 package includes js/config.js with the placeholder API key.
+If your GitHub repository already contains your real API Key in js/config.js,
+DO NOT overwrite that file when updating from R04 to R05.
